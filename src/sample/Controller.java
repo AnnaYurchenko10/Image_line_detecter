@@ -2,12 +2,13 @@ package sample;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 
 import java.awt.*;
 import java.io.File;
-import java.io.IOException;
+
 
 
 public class Controller {
@@ -15,8 +16,20 @@ public class Controller {
     @FXML
     private Button loadButton;
 
+    @FXML
+    private Button processButton;
+
     final FileChooser fileChooser = new FileChooser();//выбор файла
     private Desktop desktop = Desktop.getDesktop();//объект рабочего стола
+
+    @FXML
+    private ImageView originalImage;
+
+    @FXML
+    private ImageView newImage;
+
+    MyImage image;
+    Image afterImage;
 
     @FXML
     void loadImage(ActionEvent event) {//загрузка изображения
@@ -24,17 +37,15 @@ public class Controller {
         File file = fileChooser.showOpenDialog(loadButton.getScene().getWindow());//выбор файла
         if(file!=null)
         {
-            openFile(file);
+            image = new MyImage(file);
+            originalImage.setImage(image.getImage());
+            processButton.setDisable(false);
         }
     }
 
-    private void openFile(File file) {
-        try {
-            desktop.open(file);
-        }catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+    @FXML
+    void process(ActionEvent event) {
+        newImage.setImage(image.operatorSl());
     }
 
     @FXML
