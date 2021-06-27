@@ -1,15 +1,18 @@
 package sample;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 
-import java.awt.*;
+
+import javax.imageio.ImageIO;
 import java.io.File;
-
-
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class Controller {
 
@@ -19,8 +22,11 @@ public class Controller {
     @FXML
     private Button processButton;
 
-    final FileChooser fileChooser = new FileChooser();//выбор файла
-    private Desktop desktop = Desktop.getDesktop();//объект рабочего стола
+    @FXML
+    private Button saveButton;
+
+    @FXML
+    private ComboBox<String> algorithmComboBox;
 
     @FXML
     private ImageView originalImage;
@@ -28,8 +34,11 @@ public class Controller {
     @FXML
     private ImageView newImage;
 
-    MyImage image;
-    Image afterImage;
+    final FileChooser fileChooser = new FileChooser();//выбор файла
+    //private Desktop desktop = Desktop.getDesktop();//объект рабочего стола
+
+    private MyImage image;
+    private Image afterImage;
 
     @FXML
     void loadImage(ActionEvent event) {//загрузка изображения
@@ -45,11 +54,46 @@ public class Controller {
 
     @FXML
     void process(ActionEvent event) {
-        newImage.setImage(image.operatorSl());
+        if(algorithmComboBox.getValue().equals("Оператор Собеля")) {
+            afterImage = image.operatorSl();
+            newImage.setImage(afterImage);
+            saveButton.setDisable(false);
+        }
+        else if (algorithmComboBox.getValue().equals("Оператор Лапласа")) {
+            afterImage = image.operatorSl();
+            newImage.setImage(afterImage);
+            saveButton.setDisable(false);
+        }
+        else if (algorithmComboBox.getValue().equals("Оператор Юрченко")) {
+            afterImage = image.operatorYurchenko();
+            newImage.setImage(afterImage);
+            saveButton.setDisable(false);
+        }
+
+    }
+
+
+    @FXML
+    void save(ActionEvent event) {
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JPEG","*.jpeg"));//фильтр для файла
+        File file = fileChooser.showSaveDialog(saveButton.getScene().getWindow());
+        if(file!=null)
+        {
+            try {
+                //ImageIO.write(SwingFXUtils.fromFXImage(newImage.getImage(), null), "jpeg", file);
+                ImageIO.write(image.getNewBufferedImage(),"jpg",file);
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
     }
 
     @FXML
     void initialize() {
-
+        algorithmComboBox.getItems().add("Оператор Собеля");
+        algorithmComboBox.getItems().add("Оператор Лапласа");
+        algorithmComboBox.getItems().add("Оператор Юрченко");
+        algorithmComboBox.getSelectionModel().selectFirst();
     }
 }
